@@ -1,0 +1,22 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: milestonemaster-postgres
+    profiles:
+      - local
+    environment:
+      POSTGRES_DB: milestonemaster
+      POSTGRES_USER: milestonemaster
+      POSTGRES_PASSWORD: milestonemaster
+    ports:
+      - "5432:5432"
+    volumes:
+      - milestonemaster_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U milestonemaster -d milestonemaster"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  milestonemaster_postgres_data:
