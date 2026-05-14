@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:milestonemaster_test;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    open-in-view: false
+
+app:
+  auth:
+    jwt:
+      secret: yLv6eDrWu33nuC7WpXz+N7wJsmCxTe+5++fmW6vgha9HQhBFcHUOJkimNhpRI28co4+Dhi9X1K+9fPjKKknA2A==
+      expiration-minutes: 15
