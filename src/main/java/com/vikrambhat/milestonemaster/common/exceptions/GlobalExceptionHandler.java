@@ -15,6 +15,19 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ApiErrorResponse> handleAuthenticationException(
+            AuthenticationException ex,
+            HttpServletRequest request
+    ) {
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(ApiErrorResponse.error(
+                        HttpStatus.UNAUTHORIZED.value(),
+                        "Unauthorized",
+                        request.getRequestURI()
+                ));
+    }
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ApiErrorResponse> handleBadCredentialsException(
             BadCredentialsException ex,
@@ -37,20 +50,8 @@ public class GlobalExceptionHandler {
             String fieldMessage = fieldError.getDefaultMessage();
             failures.put(fieldName, fieldMessage);
         });
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiErrorResponse.validationErrors(HttpStatus.BAD_REQUEST.value(), "Bad request", request.getRequestURI(), failures));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiErrorResponse.validationErrors(HttpStatus.BAD_REQUEST.value(), "Bad Request", request.getRequestURI(), failures));
     }
-    @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<ApiErrorResponse> handleAuthenticationException(
-            AuthenticationException ex,
-            HttpServletRequest request
-    ) {
-        return ResponseEntity
-                .status(HttpStatus.UNAUTHORIZED)
-                .body(ApiErrorResponse.error(
-                        HttpStatus.UNAUTHORIZED.value(),
-                        "Unauthorized",
-                        request.getRequestURI()
-                ));
-    }
+
 
 }
