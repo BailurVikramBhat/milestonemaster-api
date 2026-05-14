@@ -2,6 +2,8 @@ package com.vikrambhat.milestonemaster.auth;
 
 import com.vikrambhat.milestonemaster.auth.config.JwtProperties;
 import com.vikrambhat.milestonemaster.common.utils.EmailFormatter;
+import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
+import org.springframework.security.oauth2.jwt.JwsHeader;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
@@ -30,6 +32,7 @@ public class JwtService {
                 .issuedAt(issuedAt)
                 .expiresAt(expiresAt)
                 .build();
-        return jwtEncoder.encode(JwtEncoderParameters.from(claimsSet)).getTokenValue();
+        JwsHeader headers = JwsHeader.with(MacAlgorithm.HS256).build();
+        return jwtEncoder.encode(JwtEncoderParameters.from(headers, claimsSet)).getTokenValue();
     }
 }
