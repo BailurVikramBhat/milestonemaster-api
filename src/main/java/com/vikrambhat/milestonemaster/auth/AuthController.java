@@ -16,17 +16,14 @@ import java.util.Map;
 @RequestMapping("/api/v1/auth")
 public class AuthController {
     private final AuthService authService;
-    private final AuthCookieService authCookieService;
 
-    public AuthController(AuthService authService, AuthCookieService authCookieService) {
+    public AuthController(AuthService authService) {
         this.authService = authService;
-        this.authCookieService = authCookieService;
     }
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request, HttpServletResponse response) {
-        AuthService.LoginResult result = authService.login(request);
-        authCookieService.addAuthCookie(response, result.token());
+        AuthService.LoginResult result = authService.login(request, response);
         return ResponseEntity.ok(result.response());
     }
 

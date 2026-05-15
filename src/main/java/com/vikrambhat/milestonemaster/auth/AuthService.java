@@ -24,7 +24,7 @@ public class AuthService {
         this.authCookieService = authCookieService;
     }
 
-    public LoginResult login(LoginRequest request) {
+    public LoginResult login(LoginRequest request, HttpServletResponse servletResponse) {
         String email = EmailFormatter.normalize(request.email());
         // TODO: use result of this for @AuthenticationPrincipal with customDTO
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, request.password()));
@@ -32,7 +32,9 @@ public class AuthService {
                 .orElseThrow();
         String token = jwtService.createAccessToken(user.getEmail());
         LoginResponse response = new LoginResponse(user.getPublicId(), user.getEmail(), user.getFullName());
-        return new LoginResult(response, token);
+        LoginResult result = new LoginResult(response, token);
+        authCookieService.addAuthCookie(servletResponse, result.token());
+        return result;
     }
 
     public void logout(HttpServletResponse response) {
