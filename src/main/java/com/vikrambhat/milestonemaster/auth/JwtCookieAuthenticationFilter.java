@@ -59,4 +59,12 @@ public class JwtCookieAuthenticationFilter extends OncePerRequestFilter {
                 .findFirst()
                 .orElse(null);
     }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getRequestURI().substring(request.getContextPath().length());
+        return "/api/v1/auth/login".equals(path)
+                || "/api/v1/auth/logout".equals(path);
+    }
+
 }
