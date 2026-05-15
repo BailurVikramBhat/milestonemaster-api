@@ -3,6 +3,7 @@ package com.vikrambhat.milestonemaster.auth;
 import com.vikrambhat.milestonemaster.auth.config.AuthCookieProperties;
 import com.vikrambhat.milestonemaster.auth.config.JwtProperties;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +25,6 @@ public class AuthCookieService {
                 .sameSite(authCookieProperties.sameSite())
                 .maxAge(Duration.ofMinutes(jwtProperties.expirationMinutes()))
                 .build();
-        response.addHeader("Set-Cookie", cookie.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
     }
 }
