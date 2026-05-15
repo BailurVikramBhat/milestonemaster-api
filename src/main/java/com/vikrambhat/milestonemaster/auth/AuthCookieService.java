@@ -27,4 +27,15 @@ public class AuthCookieService {
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
     }
+
+    public void clearAuthCookie(HttpServletResponse response) {
+        ResponseCookie cookie = ResponseCookie.from(authCookieProperties.name(), "")
+                .httpOnly(authCookieProperties.httpOnly())
+                .secure(authCookieProperties.secure())
+                .path(authCookieProperties.path())
+                .sameSite(authCookieProperties.sameSite())
+                .maxAge(Duration.ZERO)
+                .build();
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+    }
 }

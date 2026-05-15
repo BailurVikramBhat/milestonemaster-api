@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/v1/auth")
 public class AuthController {
@@ -26,5 +28,11 @@ public class AuthController {
         AuthService.LoginResult result = authService.login(request);
         authCookieService.addAuthCookie(response, result.token());
         return ResponseEntity.ok(result.response());
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Map<String, String>> logout(HttpServletResponse response) {
+        authService.logout(response);
+        return ResponseEntity.ok(Map.of("message", "Logged out successfully"));
     }
 }
