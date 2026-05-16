@@ -1,6 +1,6 @@
 spring:
   application:
-    name: milestonemaster
+    name: ${SPRING_APP_NAME:milestonemaster}
 server:
   port: 8080
 
@@ -30,3 +30,13 @@ app:
     jwt:
       secret: ${JWT_SECRET}
       expiration-minutes: ${JWT_EXPIRATION_MINUTES:15}
+
+logging:
+  level:
+    root: INFO
+    com.vikrambhat.milestonemaster: INFO
+    org.springframework.security: WARN
+    org.hibernate.SQL: WARN
+    org.hibernate.orm.jdbc.bind: WARN
+  pattern:
+    console: ${LOGPATTERN_CONSOLE:%green(%d{HH:mm:ss.SSS}) %blue(%-5level) %red([%thread]) %magenta([%X{requestId:-no-request-id}]) %yellow(%logger{36}) - %msg%n}

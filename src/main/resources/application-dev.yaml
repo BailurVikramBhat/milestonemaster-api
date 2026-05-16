@@ -11,11 +11,21 @@ spring:
     password: ${DB_PASSWORD:milestonemaster}
     driver-class-name: org.postgresql.Driver
 
+  devtools:
+    restart:
+      enabled: true
+    livereload:
+      enabled: true
+
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: false
     open-in-view: false
     properties:
       hibernate:
-        format_sql: true
+        format_sql: false
+logging:
+  level:
+    com.vikrambhat.milestonemaster: DEBUG
+    org.hibernate.SQL: DEBUG

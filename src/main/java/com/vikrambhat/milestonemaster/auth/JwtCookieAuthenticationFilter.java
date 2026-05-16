@@ -6,6 +6,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,6 +24,8 @@ import java.util.Arrays;
 
 @Component
 public class JwtCookieAuthenticationFilter extends OncePerRequestFilter {
+    private static final Logger log = LoggerFactory.getLogger(JwtCookieAuthenticationFilter.class);
+
     private final AuthCookieProperties authCookieProperties;
     private final JwtDecoder jwtDecoder;
     private final UserDetailsService userDetailsService;
@@ -43,6 +47,7 @@ public class JwtCookieAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             } catch (JwtException e) {
                 SecurityContextHolder.clearContext();
+                log.debug("Rejected invalid auth cookie for {} {}", request.getMethod(), request.getRequestURI());
                 response.setStatus(HttpStatus.UNAUTHORIZED.value());
                 return;
             }
