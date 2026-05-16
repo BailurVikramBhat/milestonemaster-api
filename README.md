@@ -68,6 +68,27 @@ mvn test
 
 Tests use the `test` profile and an in-memory H2 database configured in `src/test/resources/application-test.yaml`.
 
+## Logging
+
+The API adds an `X-Request-Id` header to every HTTP response. If a client sends `X-Request-Id`, the API reuses it; otherwise it generates one. The same value appears in application logs so a single request can be traced across filters, controllers, services, and exception handling.
+
+Each HTTP request also logs one summary line:
+
+```text
+POST /api/v1/auth/login -> 200 in 92ms
+```
+
+Log levels are configured per profile:
+
+| Profile | Behavior |
+| --- | --- |
+| default | App logs at `INFO`, Spring Security and SQL logs quieter |
+| `dev` | App logs at `DEBUG`, SQL statements enabled through logger config |
+| `test` | App logs mostly quiet to keep test output readable |
+| `prod` | App logs at `INFO`, framework and SQL logs kept quiet |
+
+You can override the console pattern with `LOGPATTERN_CONSOLE`. Sensitive values such as passwords, JWTs, cookies, and request bodies should not be logged. Auth-related logs mask email addresses where useful.
+
 ## Coverage
 
 Run tests with coverage checks:

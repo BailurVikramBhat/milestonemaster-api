@@ -3,3 +3,10 @@ app:
     cookie:
       secure: true
       same-site: None
+
+logging:
+  level:
+    com.vikrambhat.milestonemaster: INFO
+    org.springframework.security: WARN
+    org.hibernate.SQL: WARN
+    org.hibernate.orm.jdbc.bind: WARN
