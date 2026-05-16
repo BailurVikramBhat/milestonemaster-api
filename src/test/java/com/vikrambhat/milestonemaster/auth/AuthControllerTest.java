@@ -1,5 +1,6 @@
 package com.vikrambhat.milestonemaster.auth;
 
+import com.vikrambhat.milestonemaster.common.logging.RequestIdFilter;
 import com.vikrambhat.milestonemaster.user.Role;
 import com.vikrambhat.milestonemaster.user.User;
 import com.vikrambhat.milestonemaster.user.UserRepository;
@@ -96,6 +97,7 @@ class AuthControllerTest {
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isOk())
+                    .andExpect(header().exists(RequestIdFilter.REQUEST_ID_HEADER))
                     .andExpect(header().exists(HttpHeaders.SET_COOKIE))
                     .andExpect(cookie().exists("MM_AUTH"))
                     .andExpect(cookie().httpOnly("MM_AUTH", true))
@@ -110,6 +112,19 @@ class AuthControllerTest {
                     .andExpect(content().string(not(containsString("MM_AUTH"))))
                     .andExpect(content().string(not(containsString("accessToken"))));
         }
+
+        @Test
+        void login_withRequestId_returnsSameRequestIdHeader() throws Exception {
+            String requestId = "test-request-id";
+            Map<String, String> request = Map.of("email", "test@milestonemaster.com", "password", "Simple123@");
+            mockMvc.perform(post("/api/v1/auth/login")
+                            .header(RequestIdFilter.REQUEST_ID_HEADER, requestId)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isOk())
+                    .andExpect(header().string(RequestIdFilter.REQUEST_ID_HEADER, requestId));
+        }
+
         @Test
         void login_withIncorrectEmail_returnsUnauthorizedAndDoesNotSetHttpOnlyCookie() throws Exception {
             Map<String, String> request = Map.of("email", "dev@milestonemaster.com", "password", "Simple123@");
