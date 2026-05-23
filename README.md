@@ -58,6 +58,46 @@ Reset the local database volume:
 docker compose --profile local down -v
 ```
 
+## Local Deployment Environments
+
+MILES-11 adds three Docker Compose deployment profiles. Think of a Compose profile as a named bundle of containers. Each profile starts one backend container and one isolated PostgreSQL container.
+
+| Compose profile | Spring profile | Backend URL | PostgreSQL port | Purpose |
+| --- | --- | --- | ---: | --- |
+| `test` | `testenv` | `http://localhost:8081` | `5433` | First shared validation environment after `develop` |
+| `preprod` | `preprod` | `http://localhost:8082` | `5434` | Release-candidate validation from `release/*` branches |
+| `prod` | `prod` | `http://localhost:8083` | `5435` | Production-like local deployment from `main` |
+
+Start one environment:
+
+```powershell
+docker compose --profile test up --build
+```
+
+Stop it:
+
+```powershell
+docker compose --profile test down
+```
+
+Reset its database too:
+
+```powershell
+docker compose --profile test down -v
+```
+
+Use the same commands with `preprod` or `prod` when you want those environments. The backend health check is available without logging in:
+
+```powershell
+Invoke-RestMethod http://localhost:8081/actuator/health
+```
+
+The backend Dockerfile builds the production image:
+
+```powershell
+docker build -t milestonemaster-api:local .
+```
+
 ## Automated Tests
 
 Run tests:
@@ -107,29 +147,34 @@ The build fails if coverage drops below the configured JaCoCo threshold in `pom.
 
 ## Environment Profiles
 
-Current profiles:
+Current application profiles:
 
 | Profile | Purpose | Database |
 | --- | --- | --- |
 | `dev` | Local development | Docker PostgreSQL |
 | `test` | Automated tests | H2 in-memory |
-
-Planned deployment profiles:
-
-| Environment | Profile | Backend Port | Database Port |
-| --- | --- | ---: | ---: |
-| Test | `testenv` | `8081` | `5433` |
-| Pre-prod | `preprod` | `8082` | `5434` |
-| Production | `prod` | `8083` | `5435` |
+| `testenv` | Local Docker test deployment | Docker PostgreSQL on host port `5433` |
+| `preprod` | Local Docker pre-prod deployment | Docker PostgreSQL on host port `5434` |
+| `prod` | Local Docker production-like deployment | Docker PostgreSQL on host port `5435` |
 
 Production configuration should be environment-variable driven. Do not store production secrets in YAML files.
 
 ## CI
 
-GitHub Actions runs Maven verification for builds, tests, and coverage:
+GitHub Actions runs PR checks for any pull request:
 
-```powershell
-mvn clean verify
-```
+- Maven validation
+- Backend build
+- Unit tests and JaCoCo coverage gate
+- Backend Docker image build
+- Compose config validation for `test`, `preprod`, and `prod`
+
+Branch pushes trigger local Docker deployment validation in GitHub Actions:
+
+| Branch event | Compose profile |
+| --- | --- |
+| Push/merge to `develop` | `test` |
+| Push to `release/*` | `preprod` |
+| Push/merge to `main` | `prod` |
 
 Required status checks can be configured after the workflow has run at least once on GitHub.

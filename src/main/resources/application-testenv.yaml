@@ -1,14 +1,19 @@
 app:
+  cors:
+    allowed-origins:
+      - http://localhost:3000
+      - http://localhost:5173
+      - http://localhost:8081
   auth:
     cookie:
-      secure: true
-      same-site: None
+      secure: false
+      same-site: Lax
 
 spring:
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5435/milestonemaster_prod}
-    username: ${DB_USERNAME:milestonemaster_prod}
-    password: ${DB_PASSWORD:milestonemaster_prod}
+    url: ${DB_URL:jdbc:postgresql://localhost:5433/milestonemaster_test}
+    username: ${DB_USERNAME:milestonemaster_test}
+    password: ${DB_PASSWORD:milestonemaster_test}
     driver-class-name: org.postgresql.Driver
 
   jpa:
