@@ -1,22 +1,144 @@
+name: milestonemaster
+
+x-backend-common: &backend-common
+  build:
+    context: .
+  restart: unless-stopped
+  environment: &backend-common-env
+    JWT_SECRET: ${JWT_SECRET:-local-dev-secret-local-dev-secret-local-dev-secret-local-dev-secret}
+    JWT_EXPIRATION_MINUTES: ${JWT_EXPIRATION_MINUTES:-15}
+  healthcheck:
+    test: ["CMD-SHELL", "curl -fsS http://localhost:$${SERVER_PORT}/actuator/health || exit 1"]
+    interval: 10s
+    timeout: 5s
+    retries: 12
+    start_period: 30s
+
+x-postgres-common: &postgres-common
+  image: postgres:16
+  restart: unless-stopped
+  healthcheck:
+    test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+    interval: 10s
+    timeout: 5s
+    retries: 5
+
 services:
   postgres:
-    image: postgres:16
-    container_name: milestonemaster-postgres
+    <<: *postgres-common
+    container_name: milestonemaster-postgres-local
     profiles:
       - local
     environment:
-      POSTGRES_DB: milestonemaster
-      POSTGRES_USER: milestonemaster
-      POSTGRES_PASSWORD: milestonemaster
+      POSTGRES_DB: ${POSTGRES_DB:-milestonemaster}
+      POSTGRES_USER: ${POSTGRES_USER:-milestonemaster}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-milestonemaster}
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT:-5432}:5432"
     volumes:
-      - milestonemaster_postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U milestonemaster -d milestonemaster"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      - milestonemaster_postgres_local_data:/var/lib/postgresql/data
+
+  postgres-test:
+    <<: *postgres-common
+    container_name: milestonemaster-postgres-test
+    profiles:
+      - test
+    environment:
+      POSTGRES_DB: milestonemaster_test
+      POSTGRES_USER: milestonemaster_test
+      POSTGRES_PASSWORD: milestonemaster_test
+    ports:
+      - "5433:5432"
+    volumes:
+      - milestonemaster_postgres_test_data:/var/lib/postgresql/data
+
+  backend-test:
+    <<: *backend-common
+    image: milestonemaster-api:test
+    container_name: milestonemaster-api-test
+    profiles:
+      - test
+    depends_on:
+      postgres-test:
+        condition: service_healthy
+    environment:
+      <<: *backend-common-env
+      SPRING_PROFILES_ACTIVE: testenv
+      SERVER_PORT: 8081
+      DB_URL: jdbc:postgresql://postgres-test:5432/milestonemaster_test
+      DB_USERNAME: milestonemaster_test
+      DB_PASSWORD: milestonemaster_test
+    ports:
+      - "8081:8081"
+
+  postgres-preprod:
+    <<: *postgres-common
+    container_name: milestonemaster-postgres-preprod
+    profiles:
+      - preprod
+    environment:
+      POSTGRES_DB: milestonemaster_preprod
+      POSTGRES_USER: milestonemaster_preprod
+      POSTGRES_PASSWORD: milestonemaster_preprod
+    ports:
+      - "5434:5432"
+    volumes:
+      - milestonemaster_postgres_preprod_data:/var/lib/postgresql/data
+
+  backend-preprod:
+    <<: *backend-common
+    image: milestonemaster-api:preprod
+    container_name: milestonemaster-api-preprod
+    profiles:
+      - preprod
+    depends_on:
+      postgres-preprod:
+        condition: service_healthy
+    environment:
+      <<: *backend-common-env
+      SPRING_PROFILES_ACTIVE: preprod
+      SERVER_PORT: 8082
+      DB_URL: jdbc:postgresql://postgres-preprod:5432/milestonemaster_preprod
+      DB_USERNAME: milestonemaster_preprod
+      DB_PASSWORD: milestonemaster_preprod
+    ports:
+      - "8082:8082"
+
+  postgres-prod:
+    <<: *postgres-common
+    container_name: milestonemaster-postgres-prod
+    profiles:
+      - prod
+    environment:
+      POSTGRES_DB: milestonemaster_prod
+      POSTGRES_USER: milestonemaster_prod
+      POSTGRES_PASSWORD: milestonemaster_prod
+    ports:
+      - "5435:5432"
+    volumes:
+      - milestonemaster_postgres_prod_data:/var/lib/postgresql/data
+
+  backend-prod:
+    <<: *backend-common
+    image: milestonemaster-api:prod
+    container_name: milestonemaster-api-prod
+    profiles:
+      - prod
+    depends_on:
+      postgres-prod:
+        condition: service_healthy
+    environment:
+      <<: *backend-common-env
+      SPRING_PROFILES_ACTIVE: prod
+      SERVER_PORT: 8083
+      DB_URL: jdbc:postgresql://postgres-prod:5432/milestonemaster_prod
+      DB_USERNAME: milestonemaster_prod
+      DB_PASSWORD: milestonemaster_prod
+    ports:
+      - "8083:8083"
 
 volumes:
-  milestonemaster_postgres_data:
+  milestonemaster_postgres_local_data:
+  milestonemaster_postgres_test_data:
+  milestonemaster_postgres_preprod_data:
+  milestonemaster_postgres_prod_data:
