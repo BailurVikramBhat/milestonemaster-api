@@ -1,0 +1,11 @@
+.git
+.github
+.idea
+.mvn/wrapper/maven-wrapper.jar
+target
+*.log
+.env
+.env.*
+!.env.example
+HELP.md
+README.md
