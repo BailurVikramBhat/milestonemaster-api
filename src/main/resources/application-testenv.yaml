@@ -4,6 +4,10 @@ app:
       - http://localhost:3000
       - http://localhost:5173
       - http://localhost:8081
+  qa-seed:
+    email: ${QA_SEED_EMAIL:qa@milestonemaster.com}
+    password: ${QA_SEED_PASSWORD:Simple123@}
+    full-name: ${QA_SEED_FULL_NAME:QA User}
   auth:
     cookie:
       secure: false
