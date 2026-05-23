@@ -24,11 +24,13 @@ POSTGRES_DB=milestonemaster
 POSTGRES_USER=milestonemaster
 POSTGRES_PASSWORD=milestonemaster
 POSTGRES_PORT=5432
-JWT_SECRET=replace-with-a-long-base64-secret
+JWT_SECRET=yLv6eDrWu33nuC7WpXz+N7wJsmCxTe+5++fmW6vgha9HQhBFcHUOJkimNhpRI28co4+Dhi9X1K+9fPjKKknA2A==
 JWT_EXPIRATION_MINUTES=15
 ```
 
 Do not commit `.env`. Commit only `.env.example`.
+`JWT_SECRET` must be Base64 encoded because the API decodes it at startup for JWT signing.
+Use a different Base64 secret for real shared environments.
 
 ## Local Development
 
