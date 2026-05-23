@@ -68,6 +68,9 @@ services:
       DB_URL: jdbc:postgresql://postgres-test:5432/milestonemaster_test
       DB_USERNAME: milestonemaster_test
       DB_PASSWORD: milestonemaster_test
+      QA_SEED_EMAIL: ${QA_SEED_EMAIL:-qa@milestonemaster.com}
+      QA_SEED_PASSWORD: ${QA_SEED_PASSWORD:-Simple123@}
+      QA_SEED_FULL_NAME: ${QA_SEED_FULL_NAME:-QA User}
     ports:
       - "8081:8081"
 

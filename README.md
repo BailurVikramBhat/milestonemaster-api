@@ -91,6 +91,21 @@ Use the same commands with `preprod` or `prod` when you want those environments.
 ```powershell
 Invoke-RestMethod http://localhost:8081/actuator/health
 ```
+The `test` profile seeds a QA user if it does not already exist:
+
+```text
+Email: qa@milestonemaster.com
+Password: Simple123@
+```
+
+Override it before starting the test profile if needed:
+
+```powershell
+$env:QA_SEED_EMAIL="qa@example.com"
+$env:QA_SEED_PASSWORD="ChangeMe123@"
+$env:QA_SEED_FULL_NAME="QA User"
+docker compose --profile test up --build
+```
 
 The backend Dockerfile builds the production image:
 
