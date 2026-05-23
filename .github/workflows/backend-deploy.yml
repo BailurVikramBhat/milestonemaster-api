@@ -62,7 +62,11 @@ jobs:
 
       - name: Use fallback JWT secret for local-only deployment validation
         if: env.JWT_SECRET == ''
-        run: echo "JWT_SECRET=ci-local-dev-secret-ci-local-dev-secret-ci-local-dev-secret" >> "$GITHUB_ENV"
+        run: echo "JWT_SECRET=yLv6eDrWu33nuC7WpXz+N7wJsmCxTe+5++fmW6vgha9HQhBFcHUOJkimNhpRI28co4+Dhi9X1K+9fPjKKknA2A==" >> "$GITHUB_ENV"
+
+      - name: Validate JWT secret is Base64
+        shell: bash
+        run: python3 -c "import base64, os; base64.b64decode(os.environ['JWT_SECRET'], validate=True)"
 
       - name: Deploy Compose profile
         run: docker compose --profile "$COMPOSE_PROFILE" up -d --build

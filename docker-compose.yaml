@@ -5,7 +5,7 @@ x-backend-common: &backend-common
     context: .
   restart: unless-stopped
   environment: &backend-common-env
-    JWT_SECRET: ${JWT_SECRET:-local-dev-secret-local-dev-secret-local-dev-secret-local-dev-secret}
+    JWT_SECRET: ${JWT_SECRET:-yLv6eDrWu33nuC7WpXz+N7wJsmCxTe+5++fmW6vgha9HQhBFcHUOJkimNhpRI28co4+Dhi9X1K+9fPjKKknA2A==}
     JWT_EXPIRATION_MINUTES: ${JWT_EXPIRATION_MINUTES:-15}
   healthcheck:
     test: ["CMD-SHELL", "curl -fsS http://localhost:$${SERVER_PORT}/actuator/health || exit 1"]
