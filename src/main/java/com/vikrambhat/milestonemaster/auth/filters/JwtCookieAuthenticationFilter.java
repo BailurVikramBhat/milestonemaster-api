@@ -1,4 +1,4 @@
-package com.vikrambhat.milestonemaster.auth;
+package com.vikrambhat.milestonemaster.auth.filters;
 
 import com.vikrambhat.milestonemaster.auth.config.AuthCookieProperties;
 import jakarta.servlet.FilterChain;

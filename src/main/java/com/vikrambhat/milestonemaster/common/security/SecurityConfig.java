@@ -1,6 +1,7 @@
 package com.vikrambhat.milestonemaster.common.security;
 
-import com.vikrambhat.milestonemaster.auth.JwtCookieAuthenticationFilter;
+import com.vikrambhat.milestonemaster.auth.filters.JwtCookieAuthenticationFilter;
+import com.vikrambhat.milestonemaster.auth.filters.LoginRateLimitFilter;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,7 +18,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 @Configuration
 public class SecurityConfig {
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http, JwtCookieAuthenticationFilter jwtCookieAuthenticationFilter, CorsConfigurationSource corsConfigurationSource) {
+    SecurityFilterChain securityFilterChain(HttpSecurity http, JwtCookieAuthenticationFilter jwtCookieAuthenticationFilter, CorsConfigurationSource corsConfigurationSource, LoginRateLimitFilter loginRateLimitFilter) {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
@@ -31,6 +32,7 @@ public class SecurityConfig {
                                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED)
                         )
                 )
+                .addFilterBefore(loginRateLimitFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtCookieAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
