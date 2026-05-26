@@ -12,6 +12,8 @@ spring:
 
 app:
   auth:
+    login-rate-limit:
+      enabled: ${LOGIN_RATE_LIMIT_ENABLED:false}
     jwt:
       secret: yLv6eDrWu33nuC7WpXz+N7wJsmCxTe+5++fmW6vgha9HQhBFcHUOJkimNhpRI28co4+Dhi9X1K+9fPjKKknA2A==
       expiration-minutes: 15
